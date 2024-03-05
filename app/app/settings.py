@@ -147,3 +147,5 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+CSV_URL = os.environ.get('CSV_URL')
+

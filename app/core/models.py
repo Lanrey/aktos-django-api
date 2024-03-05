@@ -37,3 +37,11 @@ class Consumers(models.Model):
                            help_text="Enter ssn in the format XXX-XX-XXXX")
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+
+class ProcessedURL(models.Model):
+    url = models.CharField(max_length=2048, unique=True)
+    processed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.url
