@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 
 class ClientModelTest(TestCase):
     def test_client_creation(self):
-        client = Client.objects.create(name="Test Client")
+        client = models.Client.objects.create(name="Test Client")
         self.assertEqual(client.name, "Test Client")
         self.assertTrue(client.created_at)
         self.assertTrue(client.updated)
@@ -17,20 +17,20 @@ class ClientModelTest(TestCase):
 
 class ConsumerModelTest(TestCase):
     def setUp(self):
-        self.client = Client.objects.create(name="Test Client")
+        self.client = models.Client.objects.create(name="Test Client")
 
     def test_consumer_creation(self):
-        consumer = Consumers.objects.create(
+        consumer = models.Consumers.objects.create(
             client=self.client,
             balance=100.50,
-            status=Status.IN_COLLECTION,
+            status=models.Status.IN_COLLECTION,
             consumer_name="John Doe",
-            consumer_address="123 Main st",
+            consumer_address="123 Main St",
             ssn="123-45-6789"
         )
         self.assertEqual(consumer.client, self.client)
         self.assertEqual(consumer.balance, 100.50)
-        self.assertEqual(consumer.status, Status.IN_COLLECTION)
+        self.assertEqual(consumer.status, models.Status.IN_COLLECTION)
         self.assertEqual(consumer.consumer_name, "John Doe")
         self.assertEqual(consumer.consumer_address, "123 Main St")
         self.assertEqual(consumer.ssn, "123-45-6789")
@@ -40,10 +40,10 @@ class ConsumerModelTest(TestCase):
 
     def test_ssn_validation_error(self):
         with self.assertRaises(ValidationError):
-            Consumers.objects.create(
+            models.Consumers.objects.create(
                 client=self.client,
                 balance=100.50,
-                status=Status.IN_COLLECTION,
+                status=models.Status.IN_COLLECTION,
                 consumer_name="Jane Doe",
                 consumer_address="123 Main St",
                 ssn="invalid-ssn"
