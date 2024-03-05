@@ -8,7 +8,8 @@ from psycopg2 import OperationalError as Psycopg2Errpr
 
 from django.core.management import call_command
 from django.db.utils import OperationalError
-from django.test import SimpleTestCase
+from django.test import (SimpleTestCase, TestCase)
+from core.models import Client
 
 
 @patch('core.management.commands.wait_for_db.Command.check')
@@ -33,3 +34,18 @@ class CommandTests(SimpleTestCase):
         call_command('wait_for_db')
         self.assertEqual(patched_check.call_count, 6)
         patched_check.assert_called_with(databases=['default'])
+
+class SeedClientsCommandTest(TestCase):
+    def test_command_output(self):
+        self.assertFalse(Client.objects.exists())
+
+        call_command('seed_clients')
+
+        self.assertTrue(Client.objects.exists())
+        self.assertEqual(Client.objects.count(), 1)
+        client = Client.objects.first()
+        self.assertEqual(client.name, "Sample Client")
+
+        call_command('seed_clients')
+
+        self.assertEqual(Client.objects.count(), 1)
