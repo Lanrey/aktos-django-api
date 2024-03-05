@@ -8,5 +8,6 @@ urlpatterns = [
 """
 
 urlpatterns = [
-    path('ingest_csv/', views.IngestCSVFromURL.as_view(), name='ingest-csv-from-url')
+    path('ingest_csv/', views.IngestCSVFromURL.as_view(), name='ingest-csv-from-url'),
+    path('view-accounts/', views.ConsumerList.as_view(), name='account-list')
 ]
