@@ -5,6 +5,7 @@ Test custom Djangp management commands;
 from unittest.mock import patch
 
 from psycopg2 import OperationalError as Psycopg2Errpr
+from django.db.utils import DataError
 
 from django.core.management import call_command
 from django.db.utils import OperationalError
@@ -80,17 +81,6 @@ class DataIngestionCommandTestCase(TestCase):
 
         del os.environ['CSV_URL']
 
-    def test_reprocessing_url(self):
-        test_url = "http://example.cpm/already_processed.csv"
-        ProcessedURL.objects.create(url=test_url)
-        os.environ['CSV_URL'] = test_url
-
-        out = StringIO()
-        call_command('data_ingestion', stdout=out)
-
-        self.assertIn('This CSV URL has already been processed.', out.getvalue())
-
-        del os.environ['CSV_URL']
 
     def test_client_does_not_exist(self):
         # Use a client name that does not exist

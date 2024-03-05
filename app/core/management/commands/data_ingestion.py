@@ -4,7 +4,7 @@ import requests
 import os
 
 from django.core.management.base import BaseCommand
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, DataError
 from core.models import (Client, Consumers, ProcessedURL)
 
 
@@ -19,8 +19,8 @@ class Command(BaseCommand):
 
         # Check if the URL has already been processed
         if ProcessedURL.objects.filter(url=csv_url).exists():
-            self.stdout.write(self.style.WARNING('This CSV URL has already been processed.'))
-            return
+            raise DataError('This CSV URL has already been processed')
+
 
         # Attempt to retrieve a specific Client Instance
         try:
