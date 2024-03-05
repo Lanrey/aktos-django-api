@@ -22,6 +22,7 @@ class ConsumerModelTest(TestCase):
     def test_consumer_creation(self):
         consumer = models.Consumers.objects.create(
             client=self.client,
+            client_reference_no='ffeb5d88-e5af-45f0-9637-16ea469c58c0',
             balance=100.50,
             status=models.Status.IN_COLLECTION,
             consumer_name="John Doe",

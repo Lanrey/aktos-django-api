@@ -28,7 +28,7 @@ class Client(models.Model):
 
 class Consumers(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    client_reference_no = models.UUIDField(default=uuid.uuid4, editable=False)
+    client_reference_no = models.CharField(max_length=255)
     balance = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=Status.choices)
     consumer_name = models.CharField(max_length=255)
