@@ -18,7 +18,7 @@ from rest_framework import status
 from django.db.utils import DataError
 from core.models import (Client, Consumers, ProcessedURL)
 from rest_framework.pagination import PageNumberPagination
-from .serializers import ConsumerSerializer
+from .serializers import ConsumerSerializer, BalanceFilterSerializer
 
 import os
 
@@ -67,27 +67,35 @@ class ConsumerList(APIView):
         page_size = 10
 
     def get(self, request, *args, **kwargs):
-        consumers = Consumers.objects.all()
+        serializer = BalanceFilterSerializer(data=request.query_params)
+        if serializer.is_valid():
 
-        min_balance = request.query_params.get('min_balance')
-        max_balance = request.query_params.get('max_balance')
-        consumer_name = request.query_params.get('consumer_name')
-        status = request.query_params.get('status')
+            validated_data = serializer.validated_data
 
-        if min_balance is not None:
-            consumers = consumers.filter(balance__gte=min_balance)
-        if max_balance is not None:
-            consumers = consumers.filter(balance__lte=max_balance)
-        if consumer_name:
-            consumers = consumers.filter(consumer_name__icontains=consumer_name)
-        if status:
-            consumers = consumers.filter(status__iexact=status)
+            print(validated_data)
 
-        paginator = self.CustomPagination()
-        result_page = paginator.paginate_queryset(consumers, request)
+            consumers = Consumers.objects.all()
 
-        serializer = ConsumerSerializer(result_page, many=True, context={'request': request})
+            min_balance = validated_data.get('min_balance')
+            max_balance = validated_data.get('max_balance')
+            consumer_name = request.query_params.get('consumer_name')
+            status = request.query_params.get('status')
 
-        return paginator.get_paginated_response(serializer.data)
+            if min_balance is not None:
+                consumers = consumers.filter(balance__gte=min_balance)
+            if max_balance is not None:
+                consumers = consumers.filter(balance__lte=max_balance)
+            if consumer_name:
+                consumers = consumers.filter(consumer_name__icontains=consumer_name)
+            if status:
+                consumers = consumers.filter(status__iexact=status)
 
+            paginator = self.CustomPagination()
+            result_page = paginator.paginate_queryset(consumers, request)
+
+            response_serializer = ConsumerSerializer(result_page, many=True, context={'request': request})
+
+            return paginator.get_paginated_response(response_serializer.data)
+        else:
+            return Response({'error': serializer.errors}, status=400)
 
